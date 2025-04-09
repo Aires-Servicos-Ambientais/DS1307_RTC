@@ -14,7 +14,7 @@ Arduino 1.6.8
 SparkFun RedBoard
 SparkFun Real Time Clock Module (v14)
 ******************************************************************************/
-#include <SparkFunDS1307RTC.h>
+#include <DS1307RTC.h>
 #include <Wire.h>
 
 // Comment out the line below if you want month printed before date.
@@ -24,6 +24,8 @@ SparkFun Real Time Clock Module (v14)
 #define SQW_INPUT_PIN 2   // Input pin to read SQW
 #define SQW_OUTPUT_PIN 13 // LED to indicate SQW's state
 
+DS1307 rtc;
+
 void setup() 
 {
   // Use the serial monitor to view time/date output
@@ -31,8 +33,9 @@ void setup()
   pinMode(SQW_INPUT_PIN, INPUT_PULLUP);
   pinMode(SQW_OUTPUT_PIN, OUTPUT);
   digitalWrite(SQW_OUTPUT_PIN, digitalRead(SQW_INPUT_PIN));
+
+  Wire.begin();
   
-  rtc.begin(); // Call rtc.begin() to initialize the library
   // (Optional) Sets the SQW output to a 1Hz square wave.
   // (Pull-up resistor is required to use the SQW pin.)
   rtc.writeSQW(SQW_SQUARE_1);
@@ -41,11 +44,10 @@ void setup()
   // You can use the autoTime() function to set the RTC's clock and
   // date to the compiliers predefined time. (It'll be a few seconds
   // behind, but close!)
-  rtc.autoTime();
   // Or you can use the rtc.setTime(s, m, h, day, date, month, year)
   // function to explicitly set the time:
   // e.g. 7:32:16 | Monday October 31, 2016:
-  // rtc.setTime(16, 32, 7, 2, 31, 10, 16);  // Uncomment to manually set time
+  rtc.setTime(16, 32, 7, 2, 31, 10, 16);  // Uncomment to manually set time
   // rtc.set12Hour(); // Use rtc.set12Hour to set to 12-hour mode
 }
 
