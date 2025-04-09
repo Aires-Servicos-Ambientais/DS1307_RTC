@@ -1,0 +1,35 @@
+{
+    "name": "DS1307 RTC",
+    "version": "1.0.1",
+    "keywords": [
+        "rtc",
+        "i2c"
+    ],
+    "description": "This library allows you to set and read the DS1307 RTC.",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Aires-Servicos-Ambientais/DS1307_RTC"
+    },
+    "frameworks": [
+        "arduino"
+    ],
+    "platforms": [],
+    "authors": [
+        {
+            "email": "techsupport@sparkfun.com",
+            "name": "SparkFun Electronics"
+        },
+        {
+            "email": null,
+            "url": "https://github.com/afpastorio",
+            "maintainer": true,
+            "name": "André Pastório"
+        },
+        {
+            "email": null,
+            "url": "https://github.com/AndreEsquincalha",
+            "maintainer": true,
+            "name": "André Luiz Esquincalha"
+        }
+    ]
+}
