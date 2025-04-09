@@ -309,7 +309,7 @@ bool DS1307::i2cWriteBytes(uint8_t deviceAddress, ds1307_registers reg, uint8_t 
 	for (int i=0; i<len; i++)
 		Wire.write(values[i]);
 
-	if (Wire.endTransmission()) return false;
+	if (Wire.endTransmission()>2) return false;
 	
 	return true;
 }
@@ -319,7 +319,7 @@ bool DS1307::i2cWriteByte(uint8_t deviceAddress, ds1307_registers reg, uint8_t v
 	Wire.beginTransmission(deviceAddress);
 	Wire.write(reg);
 	Wire.write(value);
-	if (Wire.endTransmission()) return false;
+	if (Wire.endTransmission()>2) return false;
 	
 	return true;
 }
@@ -339,7 +339,7 @@ uint8_t DS1307::i2cReadByte(uint8_t deviceAddress, ds1307_registers reg) {
 bool DS1307::i2cReadBytes(uint8_t deviceAddress, ds1307_registers reg, uint8_t *dest, uint8_t len) {  
 	Wire.beginTransmission(deviceAddress);
 	Wire.write(reg);
-	if (Wire.endTransmission()) return false;
+	if (Wire.endTransmission()>2) return false;
 
 	if (Wire.requestFrom(deviceAddress, len) != len ) return false;
 
