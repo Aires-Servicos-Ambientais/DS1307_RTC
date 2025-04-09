@@ -348,5 +348,3 @@ bool DS1307::i2cReadBytes(uint8_t deviceAddress, ds1307_registers reg, uint8_t *
   
 	return true;
 }
-
-DS1307 rtc; // Use rtc in sketches

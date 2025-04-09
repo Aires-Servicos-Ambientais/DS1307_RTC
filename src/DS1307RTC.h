@@ -151,6 +151,4 @@ class DS1307 {
 		bool i2cReadBytes(uint8_t deviceAddress, ds1307_registers reg, uint8_t *dest, uint8_t len);
 };
 
-extern DS1307 rtc;
-
 #endif // H_DS1307RTC
