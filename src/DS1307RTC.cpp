@@ -17,25 +17,15 @@ SparkFun Real Time Clock Module (v14)
 
 #include "DS1307RTC.h"
 
-// Constructor -- Initialize class variables to 0
-DS1307::DS1307()
-{
+DS1307::DS1307() {
 	for (int i=0; i<TIME_ARRAY_LENGTH; i++)
-	{
 		_time[i] = 0;
-	}
+
 	_pm = false;
 }
 
-// Begin -- Initialize I2C interface
-void DS1307::begin(void)
-{
-	Wire.begin();
-}
-
 // setTime -- Set time and date/day registers of DS1307
-bool DS1307::setTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t date, uint8_t month, uint8_t year)
-{
+bool DS1307::setTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t date, uint8_t month, uint8_t year) {
 	_time[TIME_SECONDS] = DECtoBCD(sec);
 	_time[TIME_MINUTES] = DECtoBCD(min);
 	_time[TIME_HOURS] = DECtoBCD(hour);
@@ -48,8 +38,7 @@ bool DS1307::setTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_
 }
 
 // setTime -- Set time and date/day registers of DS1307 (using data array)
-bool DS1307::setTime(uint8_t * time, uint8_t len)
-{
+bool DS1307::setTime(uint8_t *time, uint8_t len) {
 	if (len != TIME_ARRAY_LENGTH)
 		return false;
 	
@@ -57,21 +46,16 @@ bool DS1307::setTime(uint8_t * time, uint8_t len)
 }
 
 // update -- Read all time/date registers and update the _time array
-bool DS1307::update(void)
-{
+bool DS1307::update(void) {
 	uint8_t rtcReads[7];
 	
-	if (i2cReadBytes(DS1307_RTC_ADDRESS, DS1307_REGISTER_SECONDS, rtcReads, 7))
-	{
+	if (i2cReadBytes(DS1307_RTC_ADDRESS, DS1307_REGISTER_SECONDS, rtcReads, 7)) {
 		for (int i=0; i<TIME_ARRAY_LENGTH; i++)
-		{
 			_time[i] = rtcReads[i];
-		}
 		
 		_time[TIME_SECONDS] &= 0x7F; // Mask out CH bit
 		
-		if (_time[TIME_HOURS] & TWELVE_HOUR_MODE)
-		{
+		if (_time[TIME_HOURS] & TWELVE_HOUR_MODE) {
 			if (_time[TIME_HOURS] & TWELVE_HOUR_PM)
 				_pm = true;
 			else
@@ -82,14 +66,11 @@ bool DS1307::update(void)
 		return true;
 	}
 	else
-	{
 		return false;
-	}	
 }
 
 // getSecond -- read/return seconds register of DS1307
-uint8_t DS1307::getSecond(void)
-{
+uint8_t DS1307::getSecond(void) {
 	_time[TIME_SECONDS] = i2cReadByte(DS1307_RTC_ADDRESS, DS1307_REGISTER_SECONDS);
 	_time[TIME_SECONDS] &= 0x7F; // Mask out CH bit
 
@@ -97,16 +78,14 @@ uint8_t DS1307::getSecond(void)
 }
 
 // getMinute -- read/return minutes register of DS1307
-uint8_t DS1307::getMinute(void)
-{
+uint8_t DS1307::getMinute(void) {
 	_time[TIME_MINUTES] = i2cReadByte(DS1307_RTC_ADDRESS, DS1307_REGISTER_MINUTES);
 
 	return BCDtoDEC(_time[TIME_MINUTES]);	
 }
 
 // getHour -- read/return hour register of DS1307
-uint8_t DS1307::getHour(void)
-{
+uint8_t DS1307::getHour(void) {
 	uint8_t hourRegister = i2cReadByte(DS1307_RTC_ADDRESS, DS1307_REGISTER_HOURS);
 	
 	if (hourRegister & TWELVE_HOUR_MODE)
@@ -117,42 +96,36 @@ uint8_t DS1307::getHour(void)
 }
 
 // getDay -- read/return day register of DS1307
-uint8_t DS1307::getDay(void)
-{
+uint8_t DS1307::getDay(void) {
 	_time[TIME_DAY] = i2cReadByte(DS1307_RTC_ADDRESS, DS1307_REGISTER_DAY);
 
 	return BCDtoDEC(_time[TIME_DAY]);		
 }
 
 // getDate -- read/return date register of DS1307
-uint8_t DS1307::getDate(void)
-{
+uint8_t DS1307::getDate(void) {
 	_time[TIME_DATE] = i2cReadByte(DS1307_RTC_ADDRESS, DS1307_REGISTER_DATE);
 
 	return BCDtoDEC(_time[TIME_DATE]);		
 }
 
 // getMonth -- read/return month register of DS1307
-uint8_t DS1307::getMonth(void)
-{
+uint8_t DS1307::getMonth(void) {
 	_time[TIME_MONTH] = i2cReadByte(DS1307_RTC_ADDRESS, DS1307_REGISTER_MONTH);
 
 	return BCDtoDEC(_time[TIME_MONTH]);	
 }
 
 // getYear -- read/return year register of DS1307
-uint8_t DS1307::getYear(void)
-{
+uint8_t DS1307::getYear(void) {
 	_time[TIME_YEAR] = i2cReadByte(DS1307_RTC_ADDRESS, DS1307_REGISTER_YEAR);
 
 	return BCDtoDEC(_time[TIME_YEAR]);		
 }
 
 // setSecond -- set the second register of the DS1307
-bool DS1307::setSecond(uint8_t s)
-{
-	if (s <= 59)
-	{
+bool DS1307::setSecond(uint8_t s) {
+	if (s <= 59) {
 		uint8_t _s = DECtoBCD(s);
 		return i2cWriteByte(DS1307_RTC_ADDRESS, DS1307_REGISTER_SECONDS, _s);
 	}
@@ -161,10 +134,8 @@ bool DS1307::setSecond(uint8_t s)
 }
 
 // setMinute -- set the minute register of the DS1307
-bool DS1307::setMinute(uint8_t m)
-{
-	if (m <= 59)
-	{
+bool DS1307::setMinute(uint8_t m) {
+	if (m <= 59) {
 		uint8_t _m = DECtoBCD(m);
 		return i2cWriteByte(DS1307_RTC_ADDRESS, DS1307_REGISTER_MINUTES, _m);		
 	}
@@ -173,10 +144,8 @@ bool DS1307::setMinute(uint8_t m)
 }
 
 // setHour -- set the hour register of the DS1307
-bool DS1307::setHour(uint8_t h)
-{
-	if (h <= 23)
-	{
+bool DS1307::setHour(uint8_t h) {
+	if (h <= 23) {
 		uint8_t _h = DECtoBCD(h);
 		return i2cWriteByte(DS1307_RTC_ADDRESS, DS1307_REGISTER_HOURS, _h);
 	}
@@ -185,10 +154,8 @@ bool DS1307::setHour(uint8_t h)
 }
 
 // setDay -- set the day register of the DS1307
-bool DS1307::setDay(uint8_t d)
-{
-	if ((d >= 1) && (d <= 7))
-	{
+bool DS1307::setDay(uint8_t d) {
+	if ((d >= 1) && (d <= 7)) {
 		uint8_t _d = DECtoBCD(d);
 		return i2cWriteByte(DS1307_RTC_ADDRESS, DS1307_REGISTER_DAY, _d);
 	}	
@@ -197,10 +164,8 @@ bool DS1307::setDay(uint8_t d)
 }
 
 // setDate -- set the date register of the DS1307
-bool DS1307::setDate(uint8_t d)
-{
-	if (d <= 31)
-	{
+bool DS1307::setDate(uint8_t d) {
+	if (d <= 31) {
 		uint8_t _d = DECtoBCD(d);
 		return i2cWriteByte(DS1307_RTC_ADDRESS, DS1307_REGISTER_DATE, _d);
 	}	
@@ -209,10 +174,8 @@ bool DS1307::setDate(uint8_t d)
 }
 
 // setMonth -- set the month register of the DS1307
-bool DS1307::setMonth(uint8_t mo)
-{
-	if ((mo >= 1) && (mo <= 12))
-	{
+bool DS1307::setMonth(uint8_t mo) {
+	if ((mo >= 1) && (mo <= 12)) {
 		uint8_t _mo = DECtoBCD(mo);
 		return i2cWriteByte(DS1307_RTC_ADDRESS, DS1307_REGISTER_MONTH, _mo);
 	}	
@@ -221,10 +184,8 @@ bool DS1307::setMonth(uint8_t mo)
 }
 
 // setYear -- set the year register of the DS1307
-bool DS1307::setYear(uint8_t y)
-{
-	if (y <= 99)
-	{
+bool DS1307::setYear(uint8_t y) {
+	if (y <= 99) {
 		uint8_t _y = DECtoBCD(y);
 		return i2cWriteByte(DS1307_RTC_ADDRESS, DS1307_REGISTER_YEAR, _y);
 	}	
@@ -233,8 +194,7 @@ bool DS1307::setYear(uint8_t y)
 }
 
 // set12Hour -- set (or not) to 12-hour mode) | enable12 defaults to  true
-bool DS1307::set12Hour(bool enable12)
-{
+bool DS1307::set12Hour(bool enable12) {
 	if (enable12)
 		set24Hour(false);
 	else
@@ -242,8 +202,7 @@ bool DS1307::set12Hour(bool enable12)
 }
 
 // set24Hour -- set (or not) to 24-hour mode) | enable24 defaults to  true
-bool DS1307::set24Hour(bool enable24)
-{
+bool DS1307::set24Hour(bool enable24) {
 	uint8_t hourRegister = i2cReadByte(DS1307_RTC_ADDRESS, DS1307_REGISTER_HOURS);
 	
 	bool hour12 = hourRegister & TWELVE_HOUR_MODE;
@@ -254,15 +213,13 @@ bool DS1307::set24Hour(bool enable24)
 	oldHour = BCDtoDEC(oldHour); // Convert to decimal
 	uint8_t newHour = oldHour;
 	
-	if (enable24)
-	{
+	if (enable24) {
 		bool hourPM = hourRegister & TWELVE_HOUR_PM;
 		if ((hourPM) && (oldHour >= 1)) newHour += 12;
 		else if (!(hourPM) && (oldHour == 12)) newHour = 0;
 		newHour = DECtoBCD(newHour);
 	}
-	else
-	{
+	else {
 		if (oldHour == 0) 
 			newHour = 12;
 		else if (oldHour >= 13)
@@ -278,24 +235,23 @@ bool DS1307::set24Hour(bool enable24)
 }
 
 // is12Hour -- check if the DS1307 is in 12-hour mode
-bool DS1307::is12Hour(void)
-{
+bool DS1307::is12Hour(void) {
 	uint8_t hourRegister = i2cReadByte(DS1307_RTC_ADDRESS, DS1307_REGISTER_HOURS);
 	
 	return hourRegister & TWELVE_HOUR_MODE;
 }
 
 // pm -- Check if 12-hour state is AM or PM
-bool DS1307::pm(void) // Read bit 5 in hour byte
-{
+// Read bit 5 in hour byte
+bool DS1307::pm(void) {
 	uint8_t hourRegister = i2cReadByte(DS1307_RTC_ADDRESS, DS1307_REGISTER_HOURS);
 	
 	return hourRegister & TWELVE_HOUR_PM;	
 }
 
 // enable -- enable the DS1307's oscillator
-void DS1307::enable(void)  // Write 0 to CH bit
-{
+// Write 0 to CH bit
+void DS1307::enable(void) {
 	uint8_t secondRegister = i2cReadByte(DS1307_RTC_ADDRESS, DS1307_REGISTER_SECONDS);
 	
 	secondRegister &= ~(1<<7);
@@ -304,8 +260,8 @@ void DS1307::enable(void)  // Write 0 to CH bit
 }
 
 // disable -- disable the DS1307's oscillator
-void DS1307::disable(void) // Write 1 to CH bit
-{
+// Write 1 to CH bit
+void DS1307::disable(void) {
 	uint8_t secondRegister = i2cReadByte(DS1307_RTC_ADDRESS, DS1307_REGISTER_SECONDS);
 	
 	secondRegister |= (1<<7);
@@ -314,8 +270,7 @@ void DS1307::disable(void) // Write 1 to CH bit
 }
 
 // writeSQW -- Set the SQW pin high or low
-void DS1307::writeSQW(uint8_t high)
-{
+void DS1307::writeSQW(uint8_t high) {
 	if (high) 
 		writeSQW(SQW_HIGH);
 	else 
@@ -323,19 +278,12 @@ void DS1307::writeSQW(uint8_t high)
 }
 	
 // writeSQW -- Set the SQW pin high, low, or to one of the square wave frequencies
-void DS1307::writeSQW(sqw_rate value)
-{
+void DS1307::writeSQW(sqw_rate value) {
 	uint8_t controlRegister = 0;
+
 	if (value == SQW_HIGH)
-	{
 		controlRegister |= CONTROL_BIT_OUT;
-	}
-	else if (value == SQW_LOW)
-	{
-		// Do nothing, just leave 0
-	}
-	else
-	{
+	else {
 		controlRegister |= CONTROL_BIT_SQWE;	
 		controlRegister |= value;
 	}
@@ -344,34 +292,30 @@ void DS1307::writeSQW(sqw_rate value)
 }
 
 // BCDtoDEC -- convert binary-coded decimal (BCD) to decimal
-uint8_t DS1307::BCDtoDEC(uint8_t val)
-{
+uint8_t DS1307::BCDtoDEC(uint8_t val) {
 	return ( ( val / 0x10) * 10 ) + ( val % 0x10 );
 }
 
 // BCDtoDEC -- convert decimal to binary-coded decimal (BCD)
-uint8_t DS1307::DECtoBCD(uint8_t val)
-{
+uint8_t DS1307::DECtoBCD(uint8_t val) {
 	return ( ( val / 10 ) * 0x10 ) + ( val % 10 );
 }
 
 // i2cWriteBytes -- write a set number of bytes to an i2c device, incrementing from a register
-bool DS1307::i2cWriteBytes(uint8_t deviceAddress, ds1307_registers reg, uint8_t * values, uint8_t len)
-{
+bool DS1307::i2cWriteBytes(uint8_t deviceAddress, ds1307_registers reg, uint8_t *values, uint8_t len) {
 	Wire.beginTransmission(deviceAddress);
 	Wire.write(reg);
+
 	for (int i=0; i<len; i++)
-	{
 		Wire.write(values[i]);
-	}
+
 	Wire.endTransmission();
 	
 	return true;
 }
 
 // i2cWriteByte -- write a byte value to an i2c device's register
-bool DS1307::i2cWriteByte(uint8_t deviceAddress, ds1307_registers reg, uint8_t value)
-{
+bool DS1307::i2cWriteByte(uint8_t deviceAddress, ds1307_registers reg, uint8_t value) {
 	Wire.beginTransmission(deviceAddress);
 	Wire.write(reg);
 	Wire.write(value);
@@ -381,10 +325,7 @@ bool DS1307::i2cWriteByte(uint8_t deviceAddress, ds1307_registers reg, uint8_t v
 }
 
 // i2cReadByte -- read a byte from an i2c device's register
-uint8_t DS1307::i2cReadByte(uint8_t deviceAddress, ds1307_registers reg)
-{
-	uint8_t readTemp;
-	
+uint8_t DS1307::i2cReadByte(uint8_t deviceAddress, ds1307_registers reg) {
 	Wire.beginTransmission(deviceAddress);
 	Wire.write(reg);
 	Wire.endTransmission();
@@ -395,17 +336,14 @@ uint8_t DS1307::i2cReadByte(uint8_t deviceAddress, ds1307_registers reg)
 }
 
 // i2cReadBytes -- read a set number of bytes from an i2c device, incrementing from a register
-bool DS1307::i2cReadBytes(uint8_t deviceAddress, ds1307_registers reg, uint8_t * dest, uint8_t len)
-{  
+bool DS1307::i2cReadBytes(uint8_t deviceAddress, ds1307_registers reg, uint8_t *dest, uint8_t len) {  
 	Wire.beginTransmission(deviceAddress);
 	Wire.write(reg);
 	Wire.endTransmission();
 
 	Wire.requestFrom(deviceAddress, len);
 	for (int i=0; i<len; i++)
-	{
 		dest[i] = Wire.read();
-	}
   
 	return true;  
 }
