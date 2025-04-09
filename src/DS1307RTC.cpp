@@ -17,48 +17,6 @@ SparkFun Real Time Clock Module (v14)
 
 #include "DS1307RTC.h"
 
-// Parse the __DATE__ predefined macro to generate date defaults:
-// __Date__ Format: MMM DD YYYY (First D may be a space if <10)
-// <MONTH>
-#define BUILD_MONTH_JAN ((__DATE__[0] == 'J') && (__DATE__[1] == 'a')) ? 1 : 0
-#define BUILD_MONTH_FEB (__DATE__[0] == 'F') ? 2 : 0
-#define BUILD_MONTH_MAR ((__DATE__[0] == 'M') && (__DATE__[1] == 'a') && (__DATE__[2] == 'r')) ? 3 : 0
-#define BUILD_MONTH_APR ((__DATE__[0] == 'A') && (__DATE__[1] == 'p')) ? 4 : 0
-#define BUILD_MONTH_MAY ((__DATE__[0] == 'M') && (__DATE__[1] == 'a') && (__DATE__[2] == 'y')) ? 5 : 0
-#define BUILD_MONTH_JUN ((__DATE__[0] == 'J') && (__DATE__[1] == 'u') && (__DATE__[2] == 'n')) ? 6 : 0
-#define BUILD_MONTH_JUL ((__DATE__[0] == 'J') && (__DATE__[1] == 'u') && (__DATE__[2] == 'l')) ? 7 : 0
-#define BUILD_MONTH_AUG ((__DATE__[0] == 'A') && (__DATE__[1] == 'u')) ? 8 : 0
-#define BUILD_MONTH_SEP (__DATE__[0] == 'S') ? 9 : 0
-#define BUILD_MONTH_OCT (__DATE__[0] == 'O') ? 10 : 0
-#define BUILD_MONTH_NOV (__DATE__[0] == 'N') ? 11 : 0
-#define BUILD_MONTH_DEC (__DATE__[0] == 'D') ? 12 : 0
-#define BUILD_MONTH BUILD_MONTH_JAN | BUILD_MONTH_FEB | BUILD_MONTH_MAR | \
-                    BUILD_MONTH_APR | BUILD_MONTH_MAY | BUILD_MONTH_JUN | \
-                    BUILD_MONTH_JUL | BUILD_MONTH_AUG | BUILD_MONTH_SEP | \
-                    BUILD_MONTH_OCT | BUILD_MONTH_NOV | BUILD_MONTH_DEC
-// <DATE>
-#define BUILD_DATE_0 ((__DATE__[4] == ' ') ? 0 : (__DATE__[4] - 0x30))
-#define BUILD_DATE_1 (__DATE__[5] - 0x30)
-#define BUILD_DATE ((BUILD_DATE_0 * 10) + BUILD_DATE_1)
-// <YEAR>
-#define BUILD_YEAR (((__DATE__[7] - 0x30) * 1000) + ((__DATE__[8] - 0x30) * 100) + \
-                    ((__DATE__[9] - 0x30) * 10)  + ((__DATE__[10] - 0x30) * 1))
-
-// Parse the __TIME__ predefined macro to generate time defaults:
-// __TIME__ Format: HH:MM:SS (First number of each is padded by 0 if <10)
-// <HOUR>
-#define BUILD_HOUR_0 ((__TIME__[0] == ' ') ? 0 : (__TIME__[0] - 0x30))
-#define BUILD_HOUR_1 (__TIME__[1] - 0x30)
-#define BUILD_HOUR ((BUILD_HOUR_0 * 10) + BUILD_HOUR_1)
-// <MINUTE>
-#define BUILD_MINUTE_0 ((__TIME__[3] == ' ') ? 0 : (__TIME__[3] - 0x30))
-#define BUILD_MINUTE_1 (__TIME__[4] - 0x30)
-#define BUILD_MINUTE ((BUILD_MINUTE_0 * 10) + BUILD_MINUTE_1)
-// <SECOND>
-#define BUILD_SECOND_0 ((__TIME__[6] == ' ') ? 0 : (__TIME__[6] - 0x30))
-#define BUILD_SECOND_1 (__TIME__[7] - 0x30)
-#define BUILD_SECOND ((BUILD_SECOND_0 * 10) + BUILD_SECOND_1)
-
 // Constructor -- Initialize class variables to 0
 DS1307::DS1307()
 {
@@ -96,50 +54,6 @@ bool DS1307::setTime(uint8_t * time, uint8_t len)
 		return false;
 	
 	return i2cWriteBytes(DS1307_RTC_ADDRESS, DS1307_REGISTER_BASE, time, TIME_ARRAY_LENGTH);
-}
-
-// autoTime -- Fill DS1307 time registers with compiler time/date
-bool DS1307::autoTime()
-{
-	_time[TIME_SECONDS] = DECtoBCD(BUILD_SECOND);
-	_time[TIME_MINUTES] = DECtoBCD(BUILD_MINUTE);
-	_time[TIME_HOURS] = BUILD_HOUR;
-	if (is12Hour())
-	{
-		uint8_t pmBit = 0;
-		if (_time[TIME_HOURS] <= 11)
-		{
-			if (_time[TIME_HOURS] == 0)
-				_time[TIME_HOURS] = 12;
-		}
-		else
-		{
-			pmBit = TWELVE_HOUR_PM;
-			if (_time[TIME_HOURS] >= 13)
-				_time[TIME_HOURS] -= 12;
-		}
-		DECtoBCD(_time[TIME_HOURS]);
-		_time[TIME_HOURS] |= pmBit;
-		_time[TIME_HOURS] |= TWELVE_HOUR_MODE;
-	}
-	else
-	{
-		DECtoBCD(_time[TIME_HOURS]);
-	}
-	
-	_time[TIME_MONTH] = DECtoBCD(BUILD_MONTH);
-	_time[TIME_DATE] = DECtoBCD(BUILD_DATE);
-	_time[TIME_YEAR] = DECtoBCD(BUILD_YEAR - 2000); //! Not Y2K (or Y2.1K)-proof :\
-	
-	// Calculate weekday (from here: http://stackoverflow.com/a/21235587)
-	// 0 = Sunday, 6 = Saturday
-	int d = BUILD_DATE;
-	int m = BUILD_MONTH;
-	int y = BUILD_YEAR;
-	int weekday = (d+=m<3?y--:y-2,23*m/9+d+4+y/4-y/100+y/400)%7 + 1;
-	_time[TIME_DAY] = DECtoBCD(weekday);
-	
-	setTime(_time, TIME_ARRAY_LENGTH);
 }
 
 // update -- Read all time/date registers and update the _time array

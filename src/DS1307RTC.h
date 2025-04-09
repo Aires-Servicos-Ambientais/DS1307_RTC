@@ -103,8 +103,6 @@ public:
 	             uint8_t day, uint8_t date, uint8_t month, uint8_t year);
 	// setTime -- Set time and date/day registers of DS1307 (using data array)
 	bool setTime(uint8_t * time, uint8_t len);
-	// autoTime -- Set time with compiler time/date
-	bool autoTime();
 	
 	// To set specific values of the clock, use the set____ functions:
 	bool setSecond(uint8_t s);
