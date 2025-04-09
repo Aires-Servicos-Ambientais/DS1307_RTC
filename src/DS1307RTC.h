@@ -14,8 +14,8 @@ Arduino 1.6.8
 SparkFun RedBoard
 SparkFun Real Time Clock Module (v14)
 ******************************************************************************/
-#ifndef SPARKFUNDS1307RTC_H
-#define SPARKFUNDS1307RTC_H
+#ifndef H_DS1307RTC
+#define h_DS1307RTC
 
 #include <Arduino.h>
 #include <Wire.h>

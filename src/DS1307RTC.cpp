@@ -15,7 +15,7 @@ SparkFun RedBoard
 SparkFun Real Time Clock Module (v14)
 ******************************************************************************/
 
-#include "SparkFunDS1307RTC.h"
+#include "DS1307RTC.h"
 
 // Parse the __DATE__ predefined macro to generate date defaults:
 // __Date__ Format: MMM DD YYYY (First D may be a space if <10)
