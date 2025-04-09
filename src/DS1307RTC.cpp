@@ -309,7 +309,7 @@ bool DS1307::i2cWriteBytes(uint8_t deviceAddress, ds1307_registers reg, uint8_t 
 	for (int i=0; i<len; i++)
 		Wire.write(values[i]);
 
-	Wire.endTransmission();
+	if (Wire.endTransmission()) return false;
 	
 	return true;
 }
@@ -319,7 +319,7 @@ bool DS1307::i2cWriteByte(uint8_t deviceAddress, ds1307_registers reg, uint8_t v
 	Wire.beginTransmission(deviceAddress);
 	Wire.write(reg);
 	Wire.write(value);
-	Wire.endTransmission();
+	if (Wire.endTransmission()) return false;
 	
 	return true;
 }
@@ -328,7 +328,7 @@ bool DS1307::i2cWriteByte(uint8_t deviceAddress, ds1307_registers reg, uint8_t v
 uint8_t DS1307::i2cReadByte(uint8_t deviceAddress, ds1307_registers reg) {
 	Wire.beginTransmission(deviceAddress);
 	Wire.write(reg);
-	Wire.endTransmission();
+	if (Wire.endTransmission()) return false;
 
 	Wire.requestFrom(deviceAddress, (uint8_t) 1);
 	
@@ -339,13 +339,14 @@ uint8_t DS1307::i2cReadByte(uint8_t deviceAddress, ds1307_registers reg) {
 bool DS1307::i2cReadBytes(uint8_t deviceAddress, ds1307_registers reg, uint8_t *dest, uint8_t len) {  
 	Wire.beginTransmission(deviceAddress);
 	Wire.write(reg);
-	Wire.endTransmission();
+	if (Wire.endTransmission()) return false;
 
-	Wire.requestFrom(deviceAddress, len);
+	if (Wire.requestFrom(deviceAddress, len) != len ) return false;
+
 	for (int i=0; i<len; i++)
 		dest[i] = Wire.read();
   
-	return true;  
+	return true;
 }
 
 DS1307 rtc; // Use rtc in sketches
