@@ -48,25 +48,31 @@ bool DS1307::setTime(uint8_t *time, uint8_t len) {
 // update -- Read all time/date registers and update the _time array
 bool DS1307::update(void) {
 	uint8_t rtcReads[7];
-	
-	if (i2cReadBytes(DS1307_RTC_ADDRESS, DS1307_REGISTER_SECONDS, rtcReads, 7)) {
-		for (int i=0; i<TIME_ARRAY_LENGTH; i++)
-			_time[i] = rtcReads[i];
-		
-		_time[TIME_SECONDS] &= 0x7F; // Mask out CH bit
-		
-		if (_time[TIME_HOURS] & TWELVE_HOUR_MODE) {
-			if (_time[TIME_HOURS] & TWELVE_HOUR_PM)
-				_pm = true;
-			else
-				_pm = false;
-			_time[TIME_HOURS] &= 0x1F; // Mask out 24-hour bit from hours
-		}
-		
-		return true;
+	bool success = false;
+	int tries = 0;
+
+	while (!success && tries<10) {
+		success = i2cReadBytes(DS1307_RTC_ADDRESS, DS1307_REGISTER_SECONDS, rtcReads, 7);
+		tries++;
+		delay(10);
 	}
-	else
-		return false;
+
+	if (!success) return false;
+	
+	for (int i=0; i<TIME_ARRAY_LENGTH; i++)
+		_time[i] = rtcReads[i];
+	
+	_time[TIME_SECONDS] &= 0x7F; // Mask out CH bit
+	
+	if (_time[TIME_HOURS] & TWELVE_HOUR_MODE) {
+		if (_time[TIME_HOURS] & TWELVE_HOUR_PM)
+			_pm = true;
+		else
+			_pm = false;
+		_time[TIME_HOURS] &= 0x1F; // Mask out 24-hour bit from hours
+	}
+	
+	return true;
 }
 
 // getSecond -- read/return seconds register of DS1307
