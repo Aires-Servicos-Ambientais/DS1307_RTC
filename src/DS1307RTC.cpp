@@ -202,9 +202,9 @@ bool DS1307::setYear(uint8_t y) {
 // set12Hour -- set (or not) to 12-hour mode) | enable12 defaults to  true
 bool DS1307::set12Hour(bool enable12) {
 	if (enable12)
-		set24Hour(false);
+		return set24Hour(false);
 	else
-		set24Hour(true);
+		return set24Hour(true);
 }
 
 // set24Hour -- set (or not) to 24-hour mode) | enable24 defaults to  true
