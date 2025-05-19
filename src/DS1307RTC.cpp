@@ -59,8 +59,10 @@ bool DS1307::update(void) {
 
 	if (!success) return false;
 	
-	for (int i=0; i<TIME_ARRAY_LENGTH; i++)
+	for (int i=0; i<TIME_ARRAY_LENGTH; i++) {
 		_time[i] = rtcReads[i];
+		Serial.println(rtcReads[i]);
+	}
 	
 	_time[TIME_SECONDS] &= 0x7F; // Mask out CH bit
 	
