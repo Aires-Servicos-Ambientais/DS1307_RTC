@@ -61,7 +61,7 @@ bool DS1307::update(void) {
 	
 	for (int i=0; i<TIME_ARRAY_LENGTH; i++) {
 		_time[i] = rtcReads[i];
-		Serial.println(rtcReads[i]);
+		// Serial.println(rtcReads[i]);
 	}
 	
 	_time[TIME_SECONDS] &= 0x7F; // Mask out CH bit
@@ -351,8 +351,11 @@ bool DS1307::i2cReadBytes(uint8_t deviceAddress, ds1307_registers reg, uint8_t *
 
 	if (Wire.requestFrom(deviceAddress, len) != len ) return false;
 
-	for (int i=0; i<len; i++)
+	for (int i=0; i<len; i++) {
 		dest[i] = Wire.read();
+		Serial.print(dest[i], HEX);
+		Serial.println();
+	}
   
 	return true;
 }
